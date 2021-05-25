@@ -133,13 +133,17 @@ function createHttpErrorConstructor () {
 function createClientErrorConstructor (HttpError, name, code) {
   var className = toClassName(name)
 
-  function ClientError (message) {
+  function ClientError (message, stack) {
     // create the error object
     var msg = message != null ? message : statuses[code]
     var err = new Error(msg)
-
-    // capture a stack trace to the construction point
-    Error.captureStackTrace(err, ClientError)
+    if (stack) {
+      err.stack = stack
+    } else {
+      // capture a stack trace to the construction point
+      Error.captureStackTrace(err, ClientError)
+    }
+    
 
     // adjust the [[Prototype]]
     setPrototypeOf(err, ClientError.prototype)
